@@ -5,7 +5,7 @@ import numpy as np
 from pydub import AudioSegment
 
 # Configuración de la API
-API_URL = 'http://192.168.0.21:9876'
+API_URL = 'http://192.168.0.17:9876'
 
 def send_start(effect):
     """Envía una solicitud HTTP para iniciar la grabación con un efecto específico."""
@@ -57,7 +57,7 @@ def save_as_mp3(filename, buffer, sample_rate):
         print(f"Error al guardar MP3: {e}")
 
 
-"""
+""" 
 def main():
     while True:
         command = input("Ingresa 'start' para iniciar la grabación o 'stop' para detenerla: ").strip().lower()
@@ -79,6 +79,9 @@ def main():
         else:
             print("Comando no reconocido.")
 
+
 if __name__ == "__main__":
     main()
 """
+
+

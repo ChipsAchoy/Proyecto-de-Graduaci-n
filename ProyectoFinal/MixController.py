@@ -30,19 +30,18 @@ def combine_audios(audio_list):
 def save_audio(output_path, audio, sr):
     """Guarda el audio resultante en formato mp3."""
     sf.write(output_path, audio, sr)
-
 def combine_files_with_volumes(file_paths, volumes, output_path):
-    """Combina múltiples archivos de audio, ajustando sus volúmenes respectivos."""
+    """Combina múltiples archivos de audio, ajustando sus volúmenes respectivos y normalizando a 44100 Hz si es necesario."""
     audios = []
-    sample_rate = None
+    sample_rate = 44100  # Tasa de muestreo objetivo
     
     # Cargar y ajustar el volumen de cada archivo
     for i, file_path in enumerate(file_paths):
         audio, sr = load_audio(file_path)
-        if sample_rate is None:
-            sample_rate = sr
-        elif sample_rate != sr:
-            raise ValueError(f"Los archivos de audio deben tener la misma tasa de muestreo. El archivo {file_path} tiene una tasa diferente.")
+        
+        # Si el archivo no está en 44100 Hz, se resamplea
+        if sr != sample_rate:
+            audio = librosa.resample(audio, orig_sr=sr, target_sr=sample_rate)
         
         # Ajustar el volumen en base al valor proporcionado
         volume_adjusted_audio = adjust_volume(audio, volumes[i])

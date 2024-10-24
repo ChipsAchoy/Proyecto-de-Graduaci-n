@@ -212,9 +212,25 @@ def open_file_dialog():
         print("No se seleccionó ningún archivo")
 
 
+def play_all():
+    to_play = []
+    for mp3 in mp3_objects:
+        to_play += [mp3.get_file_path()]
+
+    if to_play != []:
+        MixController.combine_files_with_volumes(to_play, volume_values, "output.mp3")
+        print("Reproduciendo todas las pistas")
+        MP3Info.MP3Info("output.mp3").play()
+    
+
+
 def start_recording(effect):
     print("Iniciando grabación...")
     APIClient.send_start(effect)
+    ########################################
+    threading.Thread(target=play_all).start()
+
+        
     
 
 def stop_recording(name):
@@ -264,11 +280,11 @@ def open_recording_window():
     effect_menu.pack(pady=10)
     
     # Botón para empezar a grabar
-    record_button = tk.Button(recording_window, text="Grabar", command=lambda: start_recording(selected_effect.get()), width=20, height=2)
+    record_button = tk.Button(recording_window, text="Grabar", command=lambda:threading.Thread(start_recording(selected_effect.get())).start(), width=20, height=2)
     record_button.pack(pady=10)
 
     # Botón para detener la grabación
-    stop_button = tk.Button(recording_window, text="Detener", command=lambda: stop_recording(name_entry.get()), width=20, height=2)
+    stop_button = tk.Button(recording_window, text="Detener", command=lambda: threading.Thread(stop_recording(name_entry.get())).start(), width=20, height=2)
     stop_button.pack(pady=10)
 
     recording_window.mainloop()
@@ -709,13 +725,7 @@ while True:
 
             # Si se hace clic en el botón de reproducir todas las pistas
             if general_play_rect.collidepoint(mouse_pos):
-                to_play = []
-                for mp3 in mp3_objects:
-                    to_play += [mp3.get_file_path()]
-
-                MixController.combine_files_with_volumes(to_play, volume_values, "output.mp3")
-                print("Reproduciendo todas las pistas")
-                MP3Info.MP3Info("output.mp3").play()
+                threading.Thread(target=play_all).start()
 
             # Si se hace clic en el botón de "Interfaz"
             if interfaz_rect.collidepoint(mouse_pos):
